@@ -1,4 +1,12 @@
-FROM rust:1.82 AS builder
+# `rust:latest`, not a pinned version: a transitive dependency (zeroize
+# v1.9.0) requires Cargo's edition2024 feature, which rust:1.82 (unstabilized
+# as of that release) rejects with "failed to parse manifest ... feature
+# `edition2024` is required" -- confirmed live in CI, 2026-07-04. Caissa's own
+# Dockerfile already uses `rust:latest` for the same reason (transitive
+# dependencies moving faster than a pinned version can track); matching that
+# convention here instead of re-pinning to a newer fixed version that will
+# just go stale again.
+FROM rust:latest AS builder
 ARG BIN
 WORKDIR /build
 COPY . .
