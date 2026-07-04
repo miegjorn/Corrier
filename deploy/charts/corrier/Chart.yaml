@@ -1,0 +1,4 @@
+apiVersion: v2
+name: corrier
+description: Matrix Application Service gateway pair for the Occitan stack
+version: 0.1.0

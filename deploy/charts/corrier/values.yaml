@@ -1,0 +1,23 @@
+image:
+  repository: ghcr.io/miegjorn/corrier
+  tag: latest
+
+readGateway:
+  replicas: 2
+  port: 8080
+
+writeGateway:
+  replicas: 2
+  components: "guilhem,gardian,fondament,farga,amassada,cor,caissa,charradissa,nervi"
+
+matrix:
+  homeserver: "http://synapse.occitan-system.svc.cluster.local:8008"
+
+farga:
+  url: "http://farga.occitan-system.svc.cluster.local:7500"
+
+nats:
+  url: "nats://nats.occitan-system.svc.cluster.local:4222"
+
+kroki:
+  url: "http://kroki.occitan-system.svc.cluster.local:8000"

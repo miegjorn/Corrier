@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: corrier-write-gateway
+  namespace: agents
+  labels:
+    app.kubernetes.io/name: corrier-write-gateway
+    app.kubernetes.io/part-of: occitan
+spec:
+  replicas: {{ .Values.writeGateway.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: corrier-write-gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: corrier-write-gateway
+    spec:
+      containers:
+        - name: corrier-write-gateway
+          image: "{{ .Values.image.repository }}:write-gateway-{{ .Values.image.tag }}"
+          command: ["corrier-write-gateway"]
+          env:
+            - name: CORRIER_COMPONENTS
+              value: {{ .Values.writeGateway.components | quote }}
+            - name: MATRIX_HOMESERVER
+              value: {{ .Values.matrix.homeserver | quote }}
+            - name: KROKI_URL
+              value: {{ .Values.kroki.url | quote }}
+            - name: NATS_URL
+              value: {{ .Values.nats.url | quote }}
+            - name: CORRIER_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: corrier-as-tokens
+                  key: as_token
