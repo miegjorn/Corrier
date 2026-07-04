@@ -3,7 +3,7 @@ image:
   # CI tags images as read-gateway-sha-<sha>/write-gateway-sha-<sha> -- no
   # `latest` tag is published for this repo (unlike Caissa's), so this must
   # track a real build's sha, not a placeholder.
-  tag: sha-01217fe
+  tag: sha-db27cd3
 
 # ghcr.io/miegjorn/corrier is a private package -- reuses the same pull
 # secret every other chart in this cluster (guilhem, component-agents) uses.
