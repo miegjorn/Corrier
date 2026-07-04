@@ -25,7 +25,7 @@ farga:
   url: "http://farga.occitan-system.svc.cluster.local:7500"
 
 nats:
-  url: "nats://nats.occitan-system.svc.cluster.local:4222"
+  url: "nats://nervi-nats.occitan-system.svc.cluster.local:4222"
 
 kroki:
   url: "http://kroki.occitan-system.svc.cluster.local:8000"

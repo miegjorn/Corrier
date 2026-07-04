@@ -29,7 +29,7 @@ async fn main() -> anyhow::Result<()> {
     let kroki_url = std::env::var("KROKI_URL")
         .unwrap_or_else(|_| "http://kroki.occitan-system.svc.cluster.local:8000".into());
     let nats_url = std::env::var("NATS_URL")
-        .unwrap_or_else(|_| "nats://nats.occitan-system.svc.cluster.local:4222".into());
+        .unwrap_or_else(|_| "nats://nervi-nats.occitan-system.svc.cluster.local:4222".into());
 
     let nervi = nervi_core::NerviClient::connect(&nats_url).await?;
     let adapter = Arc::new(MatrixAdapter { homeserver, as_token, kroki_url });

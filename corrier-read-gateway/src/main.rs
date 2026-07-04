@@ -33,7 +33,7 @@ async fn main() -> anyhow::Result<()> {
     let farga_url = std::env::var("FARGA_URL")
         .unwrap_or_else(|_| "http://farga.occitan-system.svc.cluster.local:7500".into());
     let nats_url = std::env::var("NATS_URL")
-        .unwrap_or_else(|_| "nats://nats.occitan-system.svc.cluster.local:4222".into());
+        .unwrap_or_else(|_| "nats://nervi-nats.occitan-system.svc.cluster.local:4222".into());
     let homeserver = std::env::var("MATRIX_HOMESERVER")
         .unwrap_or_else(|_| "http://synapse.occitan-system.svc.cluster.local:8008".into());
     let as_token = std::env::var("CORRIER_AS_TOKEN")
