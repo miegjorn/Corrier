@@ -1,5 +1,5 @@
 [workspace]
-members = ["corrier-core", "corrier-matrix"]
+members = ["corrier-core", "corrier-matrix", "corrier-read-gateway"]
 resolver = "2"
 
 [workspace.package]
