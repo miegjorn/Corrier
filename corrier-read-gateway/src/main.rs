@@ -117,10 +117,10 @@ async fn handle_transaction(
     Path(_txn_id): Path<String>,
     headers: HeaderMap,
     Json(body): Json<serde_json::Value>,
-) -> StatusCode {
+) -> (StatusCode, Json<serde_json::Value>) {
     if !verify_hs_token(&headers, &state.hs_token) {
         tracing::warn!("corrier-read-gateway: transaction with invalid hs_token rejected");
-        return StatusCode::FORBIDDEN;
+        return (StatusCode::FORBIDDEN, Json(serde_json::json!({})));
     }
 
     let messages = parse_transaction_events(&body, VIRTUAL_USER_PREFIX);
@@ -145,7 +145,7 @@ async fn handle_transaction(
 
     // Synapse requires a 200 with an empty JSON object to consider the
     // transaction delivered; anything else is retried.
-    StatusCode::OK
+    (StatusCode::OK, Json(serde_json::json!({})))
 }
 
 #[cfg(test)]
