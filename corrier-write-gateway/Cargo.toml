@@ -1,0 +1,15 @@
+[package]
+name = "corrier-write-gateway"
+version = "0.1.0"
+edition = "2021"
+license.workspace = true
+
+[dependencies]
+corrier-core = { path = "../corrier-core" }
+corrier-matrix = { path = "../corrier-matrix" }
+nervi-core = { path = "../../nervi/nervi-core" }
+tokio = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+futures = { workspace = true }
