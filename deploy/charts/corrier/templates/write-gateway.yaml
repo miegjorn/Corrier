@@ -16,6 +16,10 @@ spec:
       labels:
         app.kubernetes.io/name: corrier-write-gateway
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: corrier-write-gateway
           image: "{{ .Values.image.repository }}:write-gateway-{{ .Values.image.tag }}"
