@@ -19,6 +19,14 @@ COPY --from=nervi . /nervi
 RUN cargo build --release -p ${BIN}
 
 FROM debian:bookworm-slim
+# Both binaries link reqwest against the system's OpenSSL at runtime (not
+# vendored/rustls) -- confirmed live: omitting this produced "error while
+# loading shared libraries: libssl.so.3: cannot open shared object file" on
+# every pod, CrashLoopBackOff. Matches Caissa's own Dockerfile, which already
+# installs the same two packages for the same reason.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates libssl3 \
+    && rm -rf /var/lib/apt/lists/*
 ARG BIN
 # ARG values do not persist into the running container, but the ENTRYPOINT below
 # needs $BIN at container start, not just at build time. Re-exporting it as ENV
