@@ -16,7 +16,7 @@ readGateway:
 
 writeGateway:
   replicas: 2
-  components: "guilhem,gardian,fondament,farga,amassada,cor,caissa,charradissa,nervi"
+  components: "guilhem,gardian,fondament,farga,amassada,cor,caissa,charradissa,nervi,approval"
 
 matrix:
   homeserver: "http://synapse.occitan-system.svc.cluster.local:8008"
