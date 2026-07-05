@@ -29,6 +29,18 @@ pub fn tick_subject(component: &str, skill: &str) -> String {
 /// constant instead of a string literal.
 pub const SRE_ALERT_SUBJECT: &str = "occitan.sre.alerts";
 
+/// Subject a component's restart-grace notice is published to. One subject
+/// per component; the SRE watchdog subscribes to all of them at once via
+/// `LIFECYCLE_WILDCARD_SUBJECT` -- a component name isn't carried in the
+/// message body, it's read off the subject the message arrived on.
+pub fn lifecycle_subject(component: &str) -> String {
+    format!("occitan.lifecycle.{}", component)
+}
+
+/// Wildcard subject the SRE watchdog subscribes to (one durable consumer
+/// sees every component's restart-grace notices at once).
+pub const LIFECYCLE_WILDCARD_SUBJECT: &str = "occitan.lifecycle.>";
+
 /// Mint the request/reply subject pair for one dispatcher assignment.
 /// `assignment_id` must be unique per `invoke_agent` call (Task 5 mints it
 /// from a UUID, matching `dispatch.rs::create_agent_job`'s existing
@@ -60,6 +72,12 @@ pub enum PerceivedMessage {
     Tick { skill: String },
     /// A reactive anomaly push from the SRE watchdog (Task 4).
     SreAlert { anomalies: Vec<String> },
+    /// A component announcing an imminent, expected restart -- published on
+    /// `lifecycle_subject(component)` before an operator triggers an ArgoCD
+    /// sync or pod restart. The SRE watchdog honors this for `grace_seconds`
+    /// (see docs/superpowers/specs/2026-07-05-restart-grace-notice-design.md):
+    /// it keeps checking and logging locally, but suppresses escalation.
+    RestartingSoon { grace_seconds: u32 },
 }
 
 #[cfg(test)]
@@ -123,5 +141,30 @@ mod tests {
         let msg = PerceivedMessage::Tick { skill: "chronicle".to_string() };
         let json = serde_json::to_value(&msg).unwrap();
         assert_eq!(json["type"], "tick");
+    }
+
+    #[test]
+    fn lifecycle_subject_includes_component_name() {
+        assert_eq!(lifecycle_subject("gardian"), "occitan.lifecycle.gardian");
+    }
+
+    #[test]
+    fn lifecycle_wildcard_subject_is_stable() {
+        assert_eq!(LIFECYCLE_WILDCARD_SUBJECT, "occitan.lifecycle.>");
+    }
+
+    #[test]
+    fn perceived_message_round_trips_restarting_soon_variant_through_json() {
+        let msg = PerceivedMessage::RestartingSoon { grace_seconds: 180 };
+        let json = serde_json::to_string(&msg).unwrap();
+        let back: PerceivedMessage = serde_json::from_str(&json).unwrap();
+        assert_eq!(msg, back);
+    }
+
+    #[test]
+    fn perceived_message_restarting_soon_tag_is_kebab_case() {
+        let msg = PerceivedMessage::RestartingSoon { grace_seconds: 60 };
+        let json = serde_json::to_value(&msg).unwrap();
+        assert_eq!(json["type"], "restarting-soon");
     }
 }

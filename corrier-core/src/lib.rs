@@ -6,8 +6,8 @@ pub mod routing;
 
 pub use adapter::{Adapter, AdapterIdentity};
 pub use agent_subjects::{
-    dispatch_subject, mint_assignment_subjects, tick_subject, PerceivedMessage,
-    SRE_ALERT_SUBJECT,
+    dispatch_subject, lifecycle_subject, mint_assignment_subjects, tick_subject,
+    PerceivedMessage, LIFECYCLE_WILDCARD_SUBJECT, SRE_ALERT_SUBJECT,
 };
 pub use chat_subjects::{
     consume_inbound, consume_outbound, inbound_subject, outbound_subject,
