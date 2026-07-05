@@ -53,6 +53,21 @@ pub fn mint_assignment_subjects(assignment_id: &str) -> (String, String) {
     )
 }
 
+/// The single, fixed subject every approval request lands on. Charradissa's
+/// daemon is the one thing durably consuming this (stable durable name, not
+/// per-pod — see docs/superpowers/specs/2026-07-05-approval-queue-design.md's
+/// "Scale-out safety" section), so scaling it to N replicas distributes
+/// requests across them correctly via JetStream's own competing-consumer
+/// semantics, with no new code.
+pub const APPROVAL_REQUEST_SUBJECT: &str = "occitan.approval.request";
+
+/// Mint the per-request subject a requester polls/subscribes to for its
+/// approval resolution. One subject per approval id -- no shared consumer,
+/// no durable name needed, since exactly one requester ever reads it.
+pub fn mint_approval_status_subject(id: &str) -> String {
+    format!("occitan.approval.{}.status", id)
+}
+
 /// One message arriving on an agent's perceive queue, tagged so the
 /// receiving perceive-loop knows which skill/handler to invoke without
 /// inspecting field shape. `serde(tag = "type")` gives every variant an
@@ -166,5 +181,26 @@ mod tests {
         let msg = PerceivedMessage::RestartingSoon { grace_seconds: 60 };
         let json = serde_json::to_value(&msg).unwrap();
         assert_eq!(json["type"], "restarting-soon");
+    }
+
+    #[test]
+    fn approval_request_subject_is_fixed() {
+        assert_eq!(APPROVAL_REQUEST_SUBJECT, "occitan.approval.request");
+    }
+
+    #[test]
+    fn mint_approval_status_subject_is_scoped_to_the_id() {
+        assert_eq!(
+            mint_approval_status_subject("appr-abc123"),
+            "occitan.approval.appr-abc123.status"
+        );
+    }
+
+    #[test]
+    fn mint_approval_status_subject_differs_per_id() {
+        assert_ne!(
+            mint_approval_status_subject("a"),
+            mint_approval_status_subject("b")
+        );
     }
 }
